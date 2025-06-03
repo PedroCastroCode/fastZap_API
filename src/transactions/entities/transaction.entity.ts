@@ -1,5 +1,6 @@
 import { Entity } from 'src/repository/generic.repository';
 import { CreateTransactionDto } from '../dto/create-transaction.dto';
+import { UpdateTransactionDto } from '../dto/update-transaction.dto';
 
 export class Transaction implements Entity {
   id: string;
@@ -14,6 +15,19 @@ export class Transaction implements Entity {
 
   static NewTransaction(data: CreateTransactionDto) {
     const input: Partial<Transaction> = {
+      type: data.type,
+      category: data.category,
+      date: data.date,
+      description: data.description,
+    };
+
+    const transaction = new Transaction(input);
+    return transaction;
+  }
+
+  static NewTransactionWithId(data: UpdateTransactionDto, id) {
+    const input: Partial<Transaction> = {
+      id: data.id,
       type: data.type,
       category: data.category,
       date: data.date,

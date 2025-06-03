@@ -6,12 +6,13 @@ import { Transaction } from './entities/transaction.entity';
 import { Repository } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 import { GenericRepository } from 'src/repository/generic.repository';
+import { TransactionRepository } from './repository/transaction.repository';
 
 @Injectable()
 export class TransactionsService {
   constructor(
     @InjectRepository(Transaction)
-    private readonly transactionRepository: Repository<Transaction>,
+    private readonly transactionRepository: TransactionRepository,
   ) {}
 
   async create(createTransactionDto: CreateTransactionDto) {
@@ -21,22 +22,23 @@ export class TransactionsService {
   }
 
   async findAll(): Promise<Transaction[]> {
-    return this.transactionRepository.find();
+    return this.transactionRepository.findAll();
   }
 
   async findOne(id: string) {
-    return 'ok';
-    // return this.transactionRepository.findOne({ where: id });
+    return (await this.transactionRepository.findById(id)).toJSON();
   }
 
-  async update(id: number, updateTransactionDto: UpdateTransactionDto) {
-    // var transactionId = this.transactionRepository.findOne({ where: id })
-
-    // return this.transactionRepository.update(id, updateTransactionDto);
-    return 'ok';
+  async update(id: string, updateTransactionDto: UpdateTransactionDto) {
+    const transaction = Transaction.NewTransactionWithId(
+      updateTransactionDto,
+      id,
+    );
+    await this.transactionRepository.update(transaction);
+    return transaction.toJSON();
   }
 
-  async remove(id: number) {
-    return;
+  async remove(id: string) {
+    await this.transactionRepository.delete(id);
   }
 }
